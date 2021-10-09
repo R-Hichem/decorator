@@ -1,18 +1,21 @@
 import { options } from "./types";
 
-export class Notifier {
+export interface Notifier {
 
+    send(message: string): void;
+}
+
+export class DefaultNotifier implements Notifier {
     public send(message: string): void {
         console.log(`sending ${message} via default Notifier`)
     };
 }
 
-export abstract class BaseDecorator extends Notifier {
+export abstract class BaseDecorator implements Notifier {
     public wrappee: Notifier;
     public abstract send(message: string): void;
 
     constructor(wrappee: Notifier) {
-        super();
         this.wrappee = wrappee;
     }
 
@@ -44,7 +47,7 @@ export class SlackNotifier extends BaseDecorator {
 
 export class NotifierFactory {
     public static getNorifier(userPref: options) {
-        let notifierObject = new Notifier();
+        let notifierObject = new DefaultNotifier();
 
         if (userPref.includes('Facebook')) {
             notifierObject = new FacebookNotifier(notifierObject);
